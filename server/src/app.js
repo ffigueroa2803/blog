@@ -7,6 +7,9 @@ import { dirname } from "path";
 import { fileURLToPath } from "url";
 import { FRONTEND_URL } from "./config.js";
 
+import authRoutes from "./routes/authRoutes.js";
+import usersRoutes from "./routes/usersRoutes.js";
+
 dotenv.config();
 const app = express();
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -19,5 +22,7 @@ app.use(
 app.use(morgan("dev"));
 
 // Routes
+app.use("/api/auth", authRoutes);
+app.use("/api/user", usersRoutes);
 
 export default app;
