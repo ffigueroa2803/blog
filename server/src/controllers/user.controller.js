@@ -1,7 +1,8 @@
 import bcrypt from "bcryptjs";
 import { prisma } from "../utils/db.js";
+import { errorHandler } from "../utils/error.js";
 
-export const signup = async (req, res) => {
+export const signup = async (req, res, next) => {
   try {
     let hashedPwd = "";
     const { email, name, image, password, role } = req.body;
@@ -10,9 +11,7 @@ export const signup = async (req, res) => {
     const duplicate = await prisma.user.findFirst({ where: { email } });
 
     if (duplicate) {
-      return res
-        .status(409)
-        .json({ status: false, message: "Nombre de email duplicado" });
+      next(errorHandler(409, "Nombre de email duplicado"));
     }
 
     // Contraseña hash
@@ -26,16 +25,14 @@ export const signup = async (req, res) => {
     });
 
     if (user) {
-      res
-        .status(200)
-        .json({ status: true, message: `Nuevo usuario ${name} creado`, user });
-    } else {
-      res.status(400).json({
-        status: false,
-        message: "Se recibieron datos de usuario no válidos",
+      res.status(200).json({
+        success: true,
+        statusCode: 200,
+        message: `Nuevo usuario ${name} creado`,
+        user,
       });
     }
   } catch (error) {
-    console.log(error);
+    next(error);
   }
 };
