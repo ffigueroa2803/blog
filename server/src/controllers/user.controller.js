@@ -1,7 +1,7 @@
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import { prisma } from "../utils/db.js";
 
-export const register = async (req, res) => {
+export const signup = async (req, res) => {
   try {
     let hashedPwd = "";
     const { email, name, image, password, role } = req.body;
@@ -37,26 +37,5 @@ export const register = async (req, res) => {
     }
   } catch (error) {
     console.log(error);
-  }
-};
-
-export const readyEmail = async (req, res) => {
-  try {
-    const email = req.params.email;
-
-    // Compruebe si hay un email de usuario
-    const user = await prisma.user.findFirst({ where: { email } });
-
-    if (user) {
-      res
-        .status(200)
-        .json({ status: true, message: `Usuario encontrado`, user });
-    } else {
-      res
-        .status(200)
-        .json({ status: false, message: "Usuario no encontrado", user });
-    }
-  } catch (error) {
-    res.status(500).json({ status: false, message: err });
   }
 };

@@ -1,8 +1,8 @@
-import bcrypt from "bcrypt";
-import { prisma } from "./../utils/db.js";
-import { generateToken } from "../utils/generateToken.js";
+import bcrypt from "bcryptjs";
+import { prisma } from "../utils/db.js";
+import { generateToken } from "../utils/generate.token.js";
 
-export const login = async (req, res) => {
+export const signin = async (req, res) => {
   const { email, password } = req.body;
 
   const user = await prisma.user.findFirst({ where: { email } });
@@ -27,6 +27,18 @@ export const login = async (req, res) => {
     message: "Procesado correctamente",
     token: accessToken,
   });
+};
+
+export const signout = (req, res) => {
+  const cookies = req.cookies;
+  if (!cookies?.jwt) {
+    return res
+      .status(200)
+      .json({ status: false, message: "Error no existe cookie" });
+  }
+  // res.cookie("jwt", "", { httpOnly: true, expires: new Date(0) });
+  res.clearCookie("jwt", { httpOnly: true, sameSite: "None", secure: true });
+  res.status(200).json({ status: true, message: "Cerró sesión exitosamente" });
 };
 
 export const refresh = (req, res) => {
@@ -66,16 +78,4 @@ export const refresh = (req, res) => {
       });
     }
   );
-};
-
-export const logout = (req, res) => {
-  const cookies = req.cookies;
-  if (!cookies?.jwt) {
-    return res
-      .status(200)
-      .json({ status: false, message: "Error no existe cookie" });
-  }
-  // res.cookie("jwt", "", { httpOnly: true, expires: new Date(0) });
-  res.clearCookie("jwt", { httpOnly: true, sameSite: "None", secure: true });
-  res.status(200).json({ status: true, message: "Cerró sesión exitosamente" });
 };

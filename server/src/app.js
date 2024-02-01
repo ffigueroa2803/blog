@@ -7,8 +7,8 @@ import { dirname } from "path";
 import { fileURLToPath } from "url";
 import { FRONTEND_URL } from "./config.js";
 
-import authRoutes from "./routes/authRoutes.js";
-import usersRoutes from "./routes/usersRoutes.js";
+import authRoute from "./routes/auth.route.js";
+import userRoute from "./routes/user.route.js";
 
 dotenv.config();
 const app = express();
@@ -20,9 +20,10 @@ app.use(
 );
 
 app.use(morgan("dev"));
+app.use(express.json());
 
 // Routes
-app.use("/api/auth", authRoutes);
-app.use("/api/user", usersRoutes);
+app.use("/api/auth", authRoute);
+app.use("/api/user", userRoute);
 
 export default app;
