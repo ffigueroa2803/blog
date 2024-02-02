@@ -5,7 +5,6 @@ import morgan from "morgan";
 import path from "path";
 import { dirname } from "path";
 import { fileURLToPath } from "url";
-import { FRONTEND_URL } from "./config.js";
 
 import authRoute from "./routes/auth.route.js";
 import userRoute from "./routes/user.route.js";
@@ -16,11 +15,15 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 global.__basedir = __dirname;
 
 app.use(
-  cors({ origin: FRONTEND_URL, credentials: true, optionsSuccessStatus: 200 })
+  cors({
+    origin: process.env.FRONTEND_URL,
+    credentials: true,
+    optionsSuccessStatus: 200,
+  })
 );
 
 app.use(morgan("dev"));
-app.use(express.json());
+app.use(express.json({ limit: "25mb" }));
 
 // Routes
 app.use("/api/auth", authRoute);
