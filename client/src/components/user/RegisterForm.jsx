@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FormRegisterUserSchema } from "../../schemas";
 import { useCreateUserMutation } from "../../redux/services/user/userApi";
-import { FormError, FormSuccess } from "./../../components";
+import { FormError, FormSuccess, OAuth } from "./../../components";
 
 const RegisterForm = () => {
   const [error, setError] = useState("");
@@ -84,6 +84,8 @@ const RegisterForm = () => {
           "Sign Up"
         )}
       </Button>
+      {/* Athentication with Google */}
+      <OAuth />
     </form>
   );
 };
