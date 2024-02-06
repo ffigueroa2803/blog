@@ -1,11 +1,12 @@
 import jwt from "jsonwebtoken";
+import { errorHandler } from "../utils/error.js";
 
 export const verifyJWT = (req, res, next) => {
   try {
     const authHeader = req.headers.authorization || req.headers.Authorization;
 
     if (!authHeader?.startsWith("Bearer ")) {
-      return res.status(401).json({ status: false, message: "No autorizado" });
+      next(errorHandler(401, "No autorizado"));
     }
 
     const token = authHeader.split(" ")[1];
@@ -13,16 +14,12 @@ export const verifyJWT = (req, res, next) => {
     // console.log(jwt.decode(token));
 
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
-      if (err)
-        return res.status(403).json({ status: false, message: "Prohibido" });
-      req.email = decoded.UserInfo.email;
+      if (err) return next(errorHandler(403, "Prohibido"));
+      req.id = decoded.UserInfo.id;
       req.role = decoded.UserInfo.role;
       next();
     });
   } catch (error) {
-    res.status(401).json({
-      status: false,
-      message: "No autorizada, sin token o ha expirado",
-    });
+    return next(errorHandler(401, "No autorizada, sin token o ha expirado"));
   }
 };

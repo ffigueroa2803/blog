@@ -1,32 +1,71 @@
 import bcrypt from "bcryptjs";
 import { prisma } from "../utils/db.js";
 import { generateToken } from "../utils/generate.token.js";
+import { errorHandler } from "./../utils/error.js";
 
-export const signin = async (req, res) => {
-  const { email, password } = req.body;
+export const signup = async (req, res, next) => {
+  try {
+    let hashedPwd = "";
+    const { email, name, image, password, role } = req.body;
 
-  const user = await prisma.user.findFirst({ where: { email } });
+    // Compruebe si hay un email de usuario duplicado
+    const duplicate = await prisma.user.findFirst({ where: { email } });
 
-  if (!user || !user?.active) {
-    return res
-      .status(401)
-      .json({ status: false, message: "No autorizado - usuario inactivo" });
+    if (duplicate) {
+      return next(errorHandler(409, "Nombre de email duplicado"));
+    }
+
+    // Contraseña hash
+    if (password)
+      hashedPwd = await bcrypt.hash(password, 10); // Fragmento aleatorio 10
+    else hashedPwd = null;
+
+    // Crear y almacenar nuevo usuario
+    const user = await prisma.user.create({
+      data: { email, name, image, password: hashedPwd, role },
+    });
+
+    if (user) {
+      res.status(200).json({
+        success: true,
+        statusCode: 200,
+        message: `Nuevo usuario ${name} creado`,
+        user,
+      });
+    }
+  } catch (error) {
+    return next(error);
   }
+};
 
-  const match = bcrypt.compare(password, user?.password);
+export const signin = async (req, res, next) => {
+  try {
+    const { email, password } = req.body;
 
-  if (!match)
-    return res
-      .status(401)
-      .json({ status: false, message: "No autorizado - password no coincide" });
+    const user = await prisma.user.findFirst({ where: { email } });
 
-  const accessToken = generateToken(res, user);
+    if (!user)
+      return next(errorHandler(401, "No autorizado - usuario no encontrado"));
 
-  return res.json({
-    status: true,
-    message: "Procesado correctamente",
-    token: accessToken,
-  });
+    if (!user?.active)
+      return next(errorHandler(401, "No autorizado - usuario inactivo"));
+
+    const match = bcrypt.compare(password, user?.password);
+
+    if (!match)
+      return next(errorHandler(401, "No autorizado - password no coincide"));
+
+    const accessToken = generateToken(res, user);
+
+    return res.status(200).json({
+      success: true,
+      statusCode: 200,
+      message: "Procesado correctamente",
+      token: accessToken,
+    });
+  } catch (error) {
+    return next(error);
+  }
 };
 
 export const signout = (req, res) => {
@@ -41,7 +80,7 @@ export const signout = (req, res) => {
   res.status(200).json({ status: true, message: "Cerró sesión exitosamente" });
 };
 
-export const refresh = (req, res) => {
+export const refreshtoken = (req, res) => {
   const cookies = req.cookies;
 
   if (!cookies?.jwt)

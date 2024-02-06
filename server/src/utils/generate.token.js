@@ -2,13 +2,13 @@ import jwt from "jsonwebtoken";
 
 export const generateToken = (res, user) => {
   const token = jwt.sign(
-    { UserInfo: { email: user?.email, role: user?.role } },
+    { UserInfo: { id: user?.id, role: user?.role } },
     process.env.ACCESS_TOKEN_SECRET,
     { expiresIn: "15m" }
   );
 
   const refreshToken = jwt.sign(
-    { username: user?.username },
+    { username: user?.name },
     process.env.REFRESH_TOKEN_SECRET,
     { expiresIn: "7d" }
   );
