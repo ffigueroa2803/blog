@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { LoginForm } from "../components";
 
 const SignIn = () => {
@@ -22,8 +23,8 @@ const SignIn = () => {
           <LoginForm />
           <div className="flex gap-2 mt-5">
             <span>Have an account?</span>
-            <Link to="/sign-in" className="text-blue-500">
-              Sign In
+            <Link to="/sign-up" className="text-blue-500">
+              Sign Up
             </Link>
           </div>
         </div>

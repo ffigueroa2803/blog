@@ -50,18 +50,21 @@ export const signin = async (req, res, next) => {
     if (!user?.active)
       return next(errorHandler(401, "No autorizado - usuario inactivo"));
 
-    const match = bcrypt.compare(password, user?.password);
+    const match = await bcrypt.compare(password, user?.password);
 
     if (!match)
       return next(errorHandler(401, "No autorizado - password no coincide"));
 
     const accessToken = generateToken(res, user);
 
+    delete user.password;
+
     return res.status(200).json({
       success: true,
       statusCode: 200,
       message: "Procesado correctamente",
       token: accessToken,
+      user,
     });
   } catch (error) {
     return next(error);

@@ -7,11 +7,12 @@ import {
 } from "../controllers/auth.controller.js";
 import { validateSchema } from "../middlewares/validator.middleware.js";
 import { createUserSchema } from "../schemas/user.schema.js";
+import { createAuthSchema } from "../schemas/auth.schema.js";
 
 const router = Router();
 
 router.post("/signup", validateSchema(createUserSchema), signup);
-router.post("/signin", signin);
+router.post("/signin", validateSchema(createAuthSchema), signin);
 router.post("/signout", signout);
 router.post("/refreshtoken", refreshtoken);
 

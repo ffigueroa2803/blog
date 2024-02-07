@@ -1,5 +1,8 @@
+import { useSelector } from "react-redux";
+
 const Home = () => {
-  return <div>Home</div>;
+  const { currentUser } = useSelector((state) => state.auth);
+  return <div>{JSON.stringify(currentUser)}</div>;
 };
 
 export default Home;

@@ -21,9 +21,13 @@ const RegisterForm = () => {
   const handleCreateUser = async ({ name, email, password }) => {
     try {
       const resp = await createUser({ name, email, password }).unwrap();
-      if (resp) setSuccess(resp?.message);
+      if (resp) {
+        setError("");
+        setSuccess(resp?.message);
+      }
     } catch (error) {
       setError(error?.data?.message);
+      setSuccess("");
     }
   };
 
@@ -32,13 +36,13 @@ const RegisterForm = () => {
       onSubmit={handleSubmit(handleCreateUser)}
       className="flex flex-col gap-4"
     >
-      {/* Username */}
+      {/* User Name */}
       <div>
-        <Label value="Your username" />
+        <Label value="Your user name" />
         <TextInput
           type="text"
-          placeholder="Username"
-          id="username"
+          placeholder="name"
+          id="name"
           {...register("name")}
         />
         {errors.name?.message && (
