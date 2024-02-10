@@ -50,12 +50,12 @@ export const signin = async (req, res, next) => {
     if (!user?.active)
       return next(errorHandler(401, "No autorizado - usuario inactivo"));
 
-    const match = await bcrypt.compare(password, user?.password);
+    const match = await bcrypt.compare(password, user?.password).then();
 
     if (!match)
       return next(errorHandler(401, "No autorizado - password no coincide"));
 
-    const accessToken = generateToken(res, user);
+    const token = generateToken(res, user);
 
     delete user.password;
 
@@ -63,7 +63,7 @@ export const signin = async (req, res, next) => {
       success: true,
       statusCode: 200,
       message: "Procesado correctamente",
-      token: accessToken,
+      token,
       user,
     });
   } catch (error) {
@@ -74,50 +74,109 @@ export const signin = async (req, res, next) => {
 export const signout = (req, res) => {
   const cookies = req.cookies;
   if (!cookies?.jwt) {
-    return res
-      .status(200)
-      .json({ status: false, message: "Error no existe cookie" });
+    return res.status(401).json({
+      success: true,
+      statusCode: 401,
+      message: "Error no existe cookie",
+    });
   }
   // res.cookie("jwt", "", { httpOnly: true, expires: new Date(0) });
   res.clearCookie("jwt", { httpOnly: true, sameSite: "None", secure: true });
-  res.status(200).json({ status: true, message: "Cerró sesión exitosamente" });
+  return res.status(200).json({
+    success: true,
+    statusCode: 200,
+    message: "Cerró sesión exitosamente",
+  });
 };
 
 export const refreshtoken = (req, res) => {
-  const cookies = req.cookies;
+  try {
+    const cookies = req.cookies;
 
-  if (!cookies?.jwt)
-    return res.status(401).json({ status: false, message: "No autorizado" });
+    if (!cookies?.jwt) return next(errorHandler(401, "No autorizado"));
 
-  const refreshToken = cookies.jwt;
+    const refreshToken = cookies.jwt;
 
-  jwt.verify(
-    refreshToken,
-    process.env.REFRESH_TOKEN_SECRET,
-    async (err, decoded) => {
-      if (err)
-        return res.status(403).json({ status: false, message: "Prohibido" });
+    jwt.verify(
+      refreshToken,
+      process.env.REFRESH_TOKEN_SECRET,
+      async (err, decoded) => {
+        if (err) return next(errorHandler(403, "Prohibido"));
 
-      const user = await prisma.user.findFirst({
-        where: { email: decoded?.email },
+        const user = await prisma.user.findFirst({
+          where: { email: decoded?.email },
+        });
+
+        if (!user) return next(errorHandler(401, "No autorizado"));
+
+        const accessToken = jwt.sign(
+          { UserInfo: { email: user?.email, role: user?.role } },
+          process.env.ACCESS_TOKEN_SECRET,
+          { expiresIn: "15m" }
+        );
+
+        return res.json({
+          success: true,
+          statusCode: 200,
+          message: "Procesado correctamente",
+          token: accessToken,
+        });
+      }
+    );
+  } catch (error) {
+    return next(error);
+  }
+};
+
+export const google = async (req, res, next) => {
+  try {
+    const { email, name, googlePhotoUrl } = req.body;
+
+    const user = await prisma.user.findUnique({ where: { email } });
+
+    if (user) {
+      const token = generateToken(res, user);
+
+      delete user.password;
+
+      return res.status(200).json({
+        success: true,
+        statusCode: 200,
+        message: "Procesado correctamente",
+        token,
+        user,
+      });
+    } else {
+      const generatedPassword =
+        Math.random().toString(36).slice(-8) +
+        Math.random().toString(36).slice(-8);
+
+      const hashedPassword = await bcrypt.hash(generatedPassword, 10);
+
+      const newUser = await prisma.user.create({
+        data: {
+          email,
+          name:
+            name.toLowerCase().split(" ").join("") +
+            Math.random().toString(9).slice(-4),
+          image: googlePhotoUrl,
+          password: hashedPassword,
+        },
       });
 
-      if (!user)
-        return res
-          .status(401)
-          .json({ status: false, message: "No autorizado" });
+      const token = generateToken(res, newUser);
 
-      const accessToken = jwt.sign(
-        { UserInfo: { email: user?.email, role: user?.role } },
-        process.env.ACCESS_TOKEN_SECRET,
-        { expiresIn: "15m" }
-      );
+      delete newUser.password;
 
-      return res.json({
-        status: true,
+      return res.status(200).json({
+        success: true,
+        statusCode: 200,
         message: "Procesado correctamente",
-        token: accessToken,
+        token,
+        user: newUser,
       });
     }
-  );
+  } catch (error) {
+    next(error);
+  }
 };

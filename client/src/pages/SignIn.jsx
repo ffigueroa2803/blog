@@ -4,7 +4,7 @@ import { LoginForm } from "../components";
 const SignIn = () => {
   return (
     <div className="min-h-screen mt-20">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 p-3 max-w-3xl mx-auto">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 p-3 max-w-3xl mx-auto">
         {/* Left */}
         <div className="flex-1">
           <Link to="/" className="font-bold dark:text-white text-4xl">

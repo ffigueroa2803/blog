@@ -4,7 +4,7 @@ import { verifyJWT } from "../middlewares/auth.middleware.js";
 
 const router = Router();
 
-// router.use(verifyJWT);
+router.use(verifyJWT);
 
 router.get("/getusers", getusers);
 

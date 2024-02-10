@@ -2,23 +2,17 @@ import jwt from "jsonwebtoken";
 
 export const generateToken = (res, user) => {
   const token = jwt.sign(
-    { userinfo: { id: user?.id, role: user?.role } },
+    { id: user?.id, role: user?.role },
     process.env.ACCESS_TOKEN_SECRET,
-    { expiresIn: "15m" }
+    { expiresIn: process.env.JWT_EXPIRES_IN }
   );
 
-  const refreshToken = jwt.sign(
-    { name: user?.name },
-    process.env.REFRESH_TOKEN_SECRET,
-    { expiresIn: "7d" }
-  );
-
-  // Crea una cookie segura con token de actualización
-  res.cookie("jwt", refreshToken, {
+  // Crea una cookie segura
+  res.cookie("jwt", token, {
     httpOnly: true,
     secure: process.env.NODE_ENV !== "development", // Utilice cookies seguras en producción
     sameSite: "strict", // Prevenir ataques CSRF
-    maxAge: 7 * 24 * 60 * 60 * 1000, // 30 dias // Caducidad de la cookie: configurada para que coincida con refTok
+    maxAge: process.env.COOKIE_EXPIRES_IN, // 15 minutos
   });
 
   return token;

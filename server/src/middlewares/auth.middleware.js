@@ -11,12 +11,10 @@ export const verifyJWT = (req, res, next) => {
 
     const token = authHeader.split(" ")[1];
 
-    // console.log(jwt.decode(token));
-
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
       if (err) return next(errorHandler(403, "Prohibido"));
-      req.id = decoded.UserInfo.id;
-      req.role = decoded.UserInfo.role;
+      req.id = decoded.id;
+      req.role = decoded.role;
       next();
     });
   } catch (error) {

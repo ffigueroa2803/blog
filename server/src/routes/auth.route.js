@@ -13,6 +13,7 @@ const router = Router();
 
 router.post("/signup", validateSchema(createUserSchema), signup);
 router.post("/signin", validateSchema(createAuthSchema), signin);
+router.post("/google", google);
 router.post("/signout", signout);
 router.post("/refreshtoken", refreshtoken);
 
