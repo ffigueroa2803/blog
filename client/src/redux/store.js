@@ -5,12 +5,14 @@ import storage from "redux-persist/lib/storage";
 import { apiSlice } from "./services/apiSlice";
 import userSliceReducer from "./features/user/userSlice";
 import authSliceReducer from "./features/auth/authSlice";
+import themeSliceReducer from "./features/theme/themeSlice";
 
 const rootReducer = combineReducers({
   // Agrega el reductor generado como un segmento específico de nivel superior
   [apiSlice.reducerPath]: apiSlice.reducer,
   user: userSliceReducer,
   auth: authSliceReducer,
+  theme: themeSliceReducer,
 });
 
 const persistConfig = {

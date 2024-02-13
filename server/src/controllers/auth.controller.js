@@ -55,7 +55,7 @@ export const signin = async (req, res, next) => {
     if (!match)
       return next(errorHandler(401, "No autorizado - password no coincide"));
 
-    const token = generateToken(res, user);
+    const token = await generateToken(res, user);
 
     delete user.password;
 
@@ -71,22 +71,16 @@ export const signin = async (req, res, next) => {
   }
 };
 
-export const signout = (req, res) => {
-  const cookies = req.cookies;
-  if (!cookies?.jwt) {
-    return res.status(401).json({
+export const signout = (req, res, next) => {
+  try {
+    return res.clearCookie("jwt").status(200).json({
       success: true,
-      statusCode: 401,
-      message: "Error no existe cookie",
+      statusCode: 200,
+      message: "Cerró sesión exitosamente",
     });
+  } catch (error) {
+    return next(error);
   }
-  // res.cookie("jwt", "", { httpOnly: true, expires: new Date(0) });
-  res.clearCookie("jwt", { httpOnly: true, sameSite: "None", secure: true });
-  return res.status(200).json({
-    success: true,
-    statusCode: 200,
-    message: "Cerró sesión exitosamente",
-  });
 };
 
 export const refreshtoken = (req, res) => {
@@ -135,7 +129,7 @@ export const google = async (req, res, next) => {
     const user = await prisma.user.findUnique({ where: { email } });
 
     if (user) {
-      const token = generateToken(res, user);
+      const token = await generateToken(res, user);
 
       delete user.password;
 
@@ -164,7 +158,7 @@ export const google = async (req, res, next) => {
         },
       });
 
-      const token = generateToken(res, newUser);
+      const token = await generateToken(res, newUser);
 
       delete newUser.password;
 
@@ -177,6 +171,6 @@ export const google = async (req, res, next) => {
       });
     }
   } catch (error) {
-    next(error);
+    return next(error);
   }
 };

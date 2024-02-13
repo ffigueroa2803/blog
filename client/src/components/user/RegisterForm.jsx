@@ -38,10 +38,10 @@ const RegisterForm = () => {
     >
       {/* User Name */}
       <div>
-        <Label value="Your user name" />
+        <Label value="Nombre de usuario" />
         <TextInput
           type="text"
-          placeholder="name"
+          placeholder="usuario"
           id="name"
           {...register("name")}
         />
@@ -51,7 +51,7 @@ const RegisterForm = () => {
       </div>
       {/* Email */}
       <div>
-        <Label value="Your email" />
+        <Label value="Correo electrónico" />
         <TextInput
           type="Email"
           placeholder="example@gmail.com"
@@ -64,10 +64,10 @@ const RegisterForm = () => {
       </div>
       {/* Password */}
       <div>
-        <Label value="Your password" />
+        <Label value="Contraseña" />
         <TextInput
           type="password"
-          placeholder="Password"
+          placeholder="********"
           id="password"
           {...register("password")}
         />
@@ -85,7 +85,7 @@ const RegisterForm = () => {
             <span className="pl-3">Cargando...</span>
           </div>
         ) : (
-          "Sign Up"
+          "Iniciar sesión"
         )}
       </Button>
       {/* Athentication with Google */}

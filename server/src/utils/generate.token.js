@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 
-export const generateToken = (res, user) => {
+export const generateToken = async (res, user) => {
   const token = jwt.sign(
     { id: user?.id, role: user?.role },
     process.env.ACCESS_TOKEN_SECRET,
@@ -12,7 +12,7 @@ export const generateToken = (res, user) => {
     httpOnly: true,
     secure: process.env.NODE_ENV !== "development", // Utilice cookies seguras en producción
     sameSite: "strict", // Prevenir ataques CSRF
-    maxAge: process.env.COOKIE_EXPIRES_IN, // 15 minutos
+    maxAge: 15 * 60 * 60 * 1000, // 15 minutos
   });
 
   return token;

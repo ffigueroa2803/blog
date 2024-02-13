@@ -47,7 +47,7 @@ const LoginForm = () => {
     >
       {/* Email */}
       <div>
-        <Label value="Your email" />
+        <Label value="Correo electrónico" />
         <TextInput
           type="Email"
           placeholder="example@gmail.com"
@@ -60,10 +60,10 @@ const LoginForm = () => {
       </div>
       {/* Password */}
       <div>
-        <Label value="Your password" />
+        <Label value="Contraseña" />
         <TextInput
           type="password"
-          placeholder="Password"
+          placeholder="********"
           id="password"
           {...register("password")}
         />
@@ -81,7 +81,7 @@ const LoginForm = () => {
             <span className="pl-3">Cargando...</span>
           </div>
         ) : (
-          "Sign In"
+          "Iniciar sesión"
         )}
       </Button>
       {/* Athentication with Google */}

@@ -4,6 +4,7 @@ import {
   signout,
   refreshtoken,
   signup,
+  google,
 } from "../controllers/auth.controller.js";
 import { validateSchema } from "../middlewares/validator.middleware.js";
 import { createUserSchema } from "../schemas/user.schema.js";
