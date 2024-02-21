@@ -1,4 +1,4 @@
-import { Alert, Button, Modal, TextInput } from "flowbite-react";
+import { Button, Modal, Spinner, TextInput } from "flowbite-react";
 import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { CircularProgressbar } from "react-circular-progressbar";
@@ -6,22 +6,43 @@ import "react-circular-progressbar/dist/styles.css";
 import { useDispatch } from "react-redux";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
 import { Link } from "react-router-dom";
+import {
+  getDownloadURL,
+  getStorage,
+  ref,
+  uploadBytesResumable,
+} from "firebase/storage";
+import { app } from "./../lib/firebase";
+import { FormRegisterUserSchema } from "../schemas";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { FormError, FormSuccess } from "../components";
+import { useUpdateUserMutation } from "../redux/services/user/userApi";
+import { signUpSuccess } from "../redux/features/auth/authSlice";
 
 const Profile = () => {
   const filePickerRef = useRef();
   const dispatch = useDispatch();
 
-  const { currentUser, error, loading } = useSelector((state) => state.auth);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+
+  const { currentUser } = useSelector((state) => state.auth);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({ resolver: zodResolver(FormRegisterUserSchema) });
+
+  const [updateUser, { isLoading }] = useUpdateUserMutation();
 
   const [imageFile, setImageFile] = useState(null);
   const [imageFileUrl, setImageFileUrl] = useState(null);
   const [imageFileUploadProgress, setImageFileUploadProgress] = useState(null);
   const [imageFileUploadError, setImageFileUploadError] = useState(null);
   const [imageFileUploading, setImageFileUploading] = useState(false);
-  const [updateUserSuccess, setUpdateUserSuccess] = useState(null);
-  const [updateUserError, setUpdateUserError] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  const [formData, setFormData] = useState({});
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -30,28 +51,85 @@ const Profile = () => {
       setImageFileUrl(URL.createObjectURL(file));
     }
   };
+
+  const uploadImage = async () => {
+    setImageFileUploading(true);
+    setImageFileUploadError(null);
+    const storage = getStorage(app);
+    const fileName = new Date().getTime() + imageFile.name;
+    const storageRef = ref(storage, fileName);
+    const uploadTask = uploadBytesResumable(storageRef, imageFile);
+    uploadTask.on(
+      "state_changed",
+      (snapshot) => {
+        const progress =
+          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        setImageFileUploadProgress(progress.toFixed(0));
+      },
+      (error) => {
+        setImageFileUploadError(
+          "No se pudo cargar la imagen (el archivo debe tener menos de 2 MB)"
+        );
+        setImageFileUploadProgress(null);
+        setImageFile(null);
+        setImageFileUrl(null);
+        setImageFileUploading(false);
+      },
+      () => {
+        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+          setImageFileUrl(downloadURL);
+          setImageFileUploading(false);
+        });
+      }
+    );
+  };
+
+  const handleUpdateUser = async ({ name, email, password }, e) => {
+    e.preventDefault();
+    try {
+      const resp = await updateUser({
+        id: currentUser?.user?.id,
+        name,
+        email,
+        image: imageFileUrl,
+        password,
+      }).unwrap();
+      if (resp) {
+        setError("");
+        setSuccess(resp?.message);
+        dispatch(
+          signUpSuccess({
+            name,
+            email,
+            image:
+              imageFileUrl === null ? currentUser?.user?.image : imageFileUrl,
+          })
+        );
+      }
+    } catch (error) {
+      setError(error?.data?.message);
+      setSuccess("");
+    }
+  };
+
+  const handleDeleteUser = async () => {};
+
+  const handleSignout = async () => {};
+
   useEffect(() => {
     if (imageFile) {
       uploadImage();
     }
   }, [imageFile]);
 
-  const uploadImage = async () => {};
-
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.id]: e.target.value });
-  };
-
-  const handleSubmit = async (e) => {};
-
-  const handleDeleteUser = async () => {};
-
-  const handleSignout = async () => {};
-
   return (
     <div className="max-w-lg mx-auto p-3 w-full">
       <h1 className="my-7 text-center font-semibold text-3xl">Perfil</h1>
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+
+      <form
+        onSubmit={handleSubmit(handleUpdateUser)}
+        className="flex flex-col gap-4"
+      >
         <input
           type="file"
           accept="image/*"
@@ -95,36 +173,60 @@ const Profile = () => {
           />
         </div>
         {imageFileUploadError && (
-          <Alert color="failure">{imageFileUploadError}</Alert>
+          <FormError
+            message={imageFileUploadError}
+            setError={setImageFileUploadError}
+          />
         )}
+        {/* Nombre de usuario */}
         <TextInput
           type="text"
-          id="username"
           placeholder="usuario"
+          id="name"
           defaultValue={currentUser?.user?.name}
-          onChange={handleChange}
+          {...register("name")}
         />
+        {errors.name?.message && (
+          <p className="text-sm text-red-400 mt-1">{errors.name.message}</p>
+        )}
+        {/* Correo electrónico */}
         <TextInput
-          type="email"
+          type="Email"
+          placeholder="example@gmail.com"
           id="email"
-          placeholder="correo electronico"
           defaultValue={currentUser?.user?.email}
-          onChange={handleChange}
+          {...register("email")}
         />
+        {errors.email?.message && (
+          <p className="text-sm text-red-400 mt-1">{errors.email.message}</p>
+        )}
+        {/* Password */}
         <TextInput
           type="password"
+          placeholder=""
           id="password"
-          placeholder="contraseña"
-          onChange={handleChange}
+          {...register("password")}
         />
+        {errors.password?.message && (
+          <p className="text-sm text-red-400 mt-1">{errors.password.message}</p>
+        )}
+        {/* Button update */}
         <Button
           type="submit"
           gradientDuoTone="purpleToBlue"
           outline
-          disabled={loading || imageFileUploading}
+          disabled={isLoading || imageFileUploading}
         >
-          {loading ? "Cargando..." : "Actualizar"}
+          {isLoading ? (
+            <div className="">
+              <Spinner color="purple" aria-label="Spinner button" size="sm" />
+              <span className="pl-3">Cargando...</span>
+            </div>
+          ) : (
+            "Actualizar"
+          )}
         </Button>
+        {/* Crear una publicación */}
         {currentUser?.user?.role === "ADMIN" && (
           <Link to={"/create-post"}>
             <Button
@@ -137,6 +239,7 @@ const Profile = () => {
           </Link>
         )}
       </form>
+
       <div className="text-red-500 flex justify-between mt-5">
         <span onClick={() => setShowModal(true)} className="cursor-pointer">
           Borrar cuenta
@@ -145,21 +248,12 @@ const Profile = () => {
           Cerrar sesión
         </span>
       </div>
-      {updateUserSuccess && (
-        <Alert color="success" className="mt-5">
-          {updateUserSuccess}
-        </Alert>
-      )}
-      {updateUserError && (
-        <Alert color="failure" className="mt-5">
-          {updateUserError}
-        </Alert>
-      )}
-      {error && (
-        <Alert color="failure" className="mt-5">
-          {error}
-        </Alert>
-      )}
+
+      <div className="mt-4">
+        <FormError message={error} setError={setError} />
+        <FormSuccess message={success} setSuccess={setSuccess} />
+      </div>
+
       <Modal
         show={showModal}
         onClose={() => setShowModal(false)}

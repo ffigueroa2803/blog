@@ -2,21 +2,24 @@ import * as z from "zod";
 
 export const FormLoginSchema = z.object({
   email: z.string().email({
-    message: "Email is required",
+    message: "Email es requerido",
   }),
   password: z.string().min(1, {
-    message: "Password is required",
+    message: "Mínimo 8 digitos",
   }),
 });
 
 export const FormRegisterUserSchema = z.object({
   name: z.string().min(1, {
-    message: "Name is required",
+    message: "Nombre de usuario es requerido",
   }),
-  email: z.string().email({
-    message: "Email is required",
-  }),
-  password: z.string().min(8, {
-    message: "Minimun 8 characters required",
-  }),
+  email: z
+    .string({
+      required_error: "Se requiere el email",
+      invalid_type_error: "El email debe ser una cadena.",
+    })
+    .trim()
+    .min(1, { message: "Email es requerido" })
+    .email({ message: "Dirección de correo electrónico no válida" }),
+  password: z.string().min(8, { message: "Mínimo 8 digitos" }),
 });

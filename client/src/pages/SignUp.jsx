@@ -24,7 +24,7 @@ const SignUp = () => {
           <div className="flex gap-2 mt-5">
             <span>¿Tener una cuenta?</span>
             <Link to="/sign-in" className="text-blue-500">
-              Inscribirse
+              Iniciar sesión
             </Link>
           </div>
         </div>

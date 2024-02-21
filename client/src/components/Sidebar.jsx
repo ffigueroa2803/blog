@@ -108,7 +108,7 @@ const Sidebar = () => {
             className="cursor-pointer"
             onClick={handleSignout}
           >
-            Cerrar Sesión
+            Cerrar sesión
           </SidebarFlow.Item>
         </SidebarFlow.ItemGroup>
       </SidebarFlow.Items>

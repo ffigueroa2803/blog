@@ -24,6 +24,9 @@ const App = () => {
         <Route element={<PrivateRouter />}>
           <Route path="/container" element={<Container />} />
         </Route>
+        {/* <Route element={<OnlyAdminPrivateRoute />}>
+          <Route path="/create-post" element={<CreatePost />} />
+        </Route> */}
         <Route path="/projects" element={<Projects />} />
       </Routes>
       <Footer />

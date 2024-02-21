@@ -1,5 +1,11 @@
+import { AttachmentFileButton } from "../components";
+
 const Projects = () => {
-  return <div>Projects</div>;
+  return (
+    <div>
+      <AttachmentFileButton />
+    </div>
+  );
 };
 
 export default Projects;

@@ -14,11 +14,20 @@ export const userApi = apiSlice.injectEndpoints({
         method: "POST",
         body: data,
       }),
-      invalidatesTags: (result, error, { page, limit }) => [
-        { type: "User", page, limit },
-      ],
+    }),
+
+    updateUser: builder.mutation({
+      query: (data) => ({
+        url: `/api/user/update/${data?.id}`,
+        method: "PUT",
+        body: data,
+      }),
     }),
   }),
 });
 
-export const { useGetUsersQuery, useCreateUserMutation } = userApi;
+export const {
+  useGetUsersQuery,
+  useCreateUserMutation,
+  useUpdateUserMutation,
+} = userApi;

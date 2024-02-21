@@ -1,3 +1,4 @@
+import AttachmentFileButton from "./AttachmentFileButton";
 import CallToAction from "./CallToAction";
 import Header from "./Header";
 import FormError from "./FormError";
@@ -11,6 +12,7 @@ import Sidebar from "./Sidebar";
 import ThemeProvider from "./ThemeProvider";
 
 export {
+  AttachmentFileButton,
   CallToAction,
   Header,
   FormError,

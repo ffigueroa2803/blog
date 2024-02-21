@@ -85,7 +85,7 @@ const RegisterForm = () => {
             <span className="pl-3">Cargando...</span>
           </div>
         ) : (
-          "Iniciar sesión"
+          "Inscribirse"
         )}
       </Button>
       {/* Athentication with Google */}
