@@ -8,17 +8,24 @@ import {
 } from "react-icons/hi";
 import { Button, Table } from "flowbite-react";
 import { Link } from "react-router-dom";
+import { useGetUsersQuery } from "../redux/services/user/userApi";
+import avatar from "../assets/avatar-default.png";
 
 const Dashboard = () => {
   const { currentUser } = useSelector((state) => state.auth);
+  const { page, limit, search } = useSelector((state) => state?.user);
+
+  const {
+    data: getUsers,
+    isLoading,
+    error,
+  } = useGetUsersQuery({ page, limit: 5, search });
 
   const [users, setUsers] = useState([]);
   const [comments, setComments] = useState([]);
   const [posts, setPosts] = useState([]);
-  const [totalUsers, setTotalUsers] = useState(0);
   const [totalPosts, setTotalPosts] = useState(0);
   const [totalComments, setTotalComments] = useState(0);
-  const [lastMonthUsers, setLastMonthUsers] = useState(0);
   const [lastMonthPosts, setLastMonthPosts] = useState(0);
   const [lastMonthComments, setLastMonthComments] = useState(0);
 
@@ -28,17 +35,19 @@ const Dashboard = () => {
         <div className="flex flex-col p-3 dark:bg-slate-800 gap-4 md:w-72 w-full rounded-md shadow-md">
           <div className="flex justify-between">
             <div className="">
-              <h3 className="text-gray-500 text-md uppercase">Total Users</h3>
-              <p className="text-2xl">{totalUsers}</p>
+              <h3 className="text-gray-500 text-md uppercase">
+                Total de usuariOs
+              </h3>
+              <p className="text-2xl">{getUsers?.meta?.totalItems}</p>
             </div>
             <HiOutlineUserGroup className="bg-teal-600  text-white rounded-full text-5xl p-3 shadow-lg" />
           </div>
           <div className="flex  gap-2 text-sm">
             <span className="text-green-500 flex items-center">
               <HiArrowNarrowUp />
-              {lastMonthUsers}
+              {getUsers?.lastMonthUsers}
             </span>
-            <div className="text-gray-500">Last month</div>
+            <div className="text-gray-500">El mes pasado</div>
           </div>
         </div>
         <div className="flex flex-col p-3 dark:bg-slate-800 gap-4 md:w-72 w-full rounded-md shadow-md">
@@ -79,31 +88,30 @@ const Dashboard = () => {
       <div className="flex flex-wrap gap-4 py-3 mx-auto justify-center">
         <div className="flex flex-col w-full md:w-auto shadow-md p-2 rounded-md dark:bg-gray-800">
           <div className="flex justify-between  p-3 text-sm font-semibold">
-            <h1 className="text-center p-2">Recent users</h1>
+            <h1 className="text-center p-2">Usuarios recientes</h1>
             <Button outline gradientDuoTone="purpleToPink">
-              <Link to={"/dashboard?tab=users"}>See all</Link>
+              <Link to={"/container?tab=users"}>Ver todo</Link>
             </Button>
           </div>
           <Table hoverable>
             <Table.Head>
-              <Table.HeadCell>User image</Table.HeadCell>
-              <Table.HeadCell>Username</Table.HeadCell>
+              <Table.HeadCell>Imagen de usuario</Table.HeadCell>
+              <Table.HeadCell>Nombre de usuario</Table.HeadCell>
             </Table.Head>
-            {users &&
-              users.map((user) => (
-                <Table.Body key={user._id} className="divide-y">
-                  <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
-                    <Table.Cell>
-                      <img
-                        src={user.profilePicture}
-                        alt="user"
-                        className="w-10 h-10 rounded-full bg-gray-500"
-                      />
-                    </Table.Cell>
-                    <Table.Cell>{user.username}</Table.Cell>
-                  </Table.Row>
-                </Table.Body>
-              ))}
+            {getUsers?.data?.map((user) => (
+              <Table.Body key={user.id} className="divide-y">
+                <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
+                  <Table.Cell>
+                    <img
+                      src={user?.image === null ? avatar : user?.image}
+                      alt="user"
+                      className="w-10 h-10 rounded-full bg-gray-500"
+                    />
+                  </Table.Cell>
+                  <Table.Cell>{user.name}</Table.Cell>
+                </Table.Row>
+              </Table.Body>
+            ))}
           </Table>
         </div>
         <div className="flex flex-col w-full md:w-auto shadow-md p-2 rounded-md dark:bg-gray-800">

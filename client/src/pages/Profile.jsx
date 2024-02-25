@@ -17,8 +17,16 @@ import { FormRegisterUserSchema } from "../schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { FormError, FormSuccess } from "../components";
-import { useUpdateUserMutation } from "../redux/services/user/userApi";
-import { signUpSuccess } from "../redux/features/auth/authSlice";
+import {
+  useDeleteUserMutation,
+  useUpdateUserMutation,
+} from "../redux/services/user/userApi";
+import {
+  signUpSuccess,
+  signoutSuccess,
+} from "../redux/features/auth/authSlice";
+import { useCloseSessionMutation } from "../redux/services/auth/authApi";
+import avatar from "../assets/avatar-default.png";
 
 const Profile = () => {
   const filePickerRef = useRef();
@@ -35,7 +43,18 @@ const Profile = () => {
     formState: { errors },
   } = useForm({ resolver: zodResolver(FormRegisterUserSchema) });
 
-  const [updateUser, { isLoading }] = useUpdateUserMutation();
+  const [
+    updateUser,
+    {
+      isLoading: isLoadingUpdate,
+      isError: isErrorUpdate,
+      isSuccess: isSuccessUpdate,
+    },
+  ] = useUpdateUserMutation();
+  const [deleteUser, { isLoading: isLoadingDelete, isError: isErrorDelete }] =
+    useDeleteUserMutation();
+  const [closeSession, { isLoading: isLoadingCloseSession }] =
+    useCloseSessionMutation();
 
   const [imageFile, setImageFile] = useState(null);
   const [imageFileUrl, setImageFileUrl] = useState(null);
@@ -112,11 +131,37 @@ const Profile = () => {
     }
   };
 
-  const handleDeleteUser = async () => {};
+  const handleDeleteUser = async () => {
+    setShowModal(false);
+    try {
+      const resp = await deleteUser({ id: currentUser?.user?.id }).unwrap();
+      if (resp) {
+        setError("");
+        setSuccess(resp?.message);
+        handleSignout();
+      }
+    } catch (error) {
+      setError(error?.data?.message);
+      setSuccess("");
+    }
+  };
 
-  const handleSignout = async () => {};
+  const handleSignout = async () => {
+    try {
+      const resp = await closeSession().unwrap();
+      if (resp?.statusCode === 200) {
+        setShowModal(false);
+        dispatch(signoutSuccess());
+        navigate("/");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   useEffect(() => {
+    if (currentUser?.user?.image === null && imageFileUrl === null)
+      setImageFileUrl(avatar);
     if (imageFile) {
       uploadImage();
     }
@@ -125,7 +170,7 @@ const Profile = () => {
   return (
     <div className="max-w-lg mx-auto p-3 w-full">
       <h1 className="my-7 text-center font-semibold text-3xl">Perfil</h1>
-
+      {/* Form profile */}
       <form
         onSubmit={handleSubmit(handleUpdateUser)}
         className="flex flex-col gap-4"
@@ -137,6 +182,7 @@ const Profile = () => {
           ref={filePickerRef}
           hidden
         />
+        {/* CircularProgressbar */}
         <div
           className="relative w-32 h-32 self-center cursor-pointer shadow-md overflow-hidden rounded-full"
           onClick={() => filePickerRef.current.click()}
@@ -164,7 +210,7 @@ const Profile = () => {
           )}
           <img
             src={imageFileUrl || currentUser?.user?.image}
-            alt="usuario"
+            alt=""
             className={`rounded-full w-full h-full object-cover border-8 border-[lightgray] ${
               imageFileUploadProgress &&
               imageFileUploadProgress < 100 &&
@@ -203,7 +249,7 @@ const Profile = () => {
         {/* Password */}
         <TextInput
           type="password"
-          placeholder=""
+          placeholder="********"
           id="password"
           {...register("password")}
         />
@@ -215,9 +261,9 @@ const Profile = () => {
           type="submit"
           gradientDuoTone="purpleToBlue"
           outline
-          disabled={isLoading || imageFileUploading}
+          disabled={isLoadingUpdate || imageFileUploading}
         >
-          {isLoading ? (
+          {isLoadingUpdate ? (
             <div className="">
               <Spinner color="purple" aria-label="Spinner button" size="sm" />
               <span className="pl-3">Cargando...</span>
@@ -226,7 +272,7 @@ const Profile = () => {
             "Actualizar"
           )}
         </Button>
-        {/* Crear una publicación */}
+        {/* Create a post */}
         {currentUser?.user?.role === "ADMIN" && (
           <Link to={"/create-post"}>
             <Button
@@ -239,7 +285,7 @@ const Profile = () => {
           </Link>
         )}
       </form>
-
+      {/* Option Delete account && Sign off */}
       <div className="text-red-500 flex justify-between mt-5">
         <span onClick={() => setShowModal(true)} className="cursor-pointer">
           Borrar cuenta
@@ -248,12 +294,16 @@ const Profile = () => {
           Cerrar sesión
         </span>
       </div>
-
+      {/* Display Error or Success */}
       <div className="mt-4">
-        <FormError message={error} setError={setError} />
-        <FormSuccess message={success} setSuccess={setSuccess} />
+        {(isErrorUpdate || isErrorDelete) && (
+          <FormError message={error} setError={setError} />
+        )}
+        {isSuccessUpdate && (
+          <FormSuccess message={success} setSuccess={setSuccess} />
+        )}
       </div>
-
+      {/* Modal Delete */}
       <Modal
         show={showModal}
         onClose={() => setShowModal(false)}
@@ -268,8 +318,23 @@ const Profile = () => {
               ¿Estás segura de que quieres eliminar tu cuenta?
             </h3>
             <div className="flex justify-center gap-4">
-              <Button color="failure" onClick={handleDeleteUser}>
-                Si estoy seguro
+              <Button
+                color="failure"
+                disabled={isLoadingDelete}
+                onClick={handleDeleteUser}
+              >
+                {isLoadingDelete ? (
+                  <div className="">
+                    <Spinner
+                      color="purple"
+                      aria-label="Spinner button"
+                      size="sm"
+                    />
+                    <span className="pl-3">Cargando...</span>
+                  </div>
+                ) : (
+                  "Si estoy seguro"
+                )}
               </Button>
               <Button color="gray" onClick={() => setShowModal(false)}>
                 No, cancelar

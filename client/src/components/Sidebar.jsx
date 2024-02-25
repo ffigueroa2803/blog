@@ -11,7 +11,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { signoutSuccess } from "../redux/features/auth/authSlice";
-import { useCloseMutation } from "../redux/services/auth/authApi";
+import { useCloseSessionMutation } from "../redux/services/auth/authApi";
 
 const Sidebar = () => {
   const location = useLocation();
@@ -22,11 +22,11 @@ const Sidebar = () => {
 
   const [tab, setTab] = useState("");
 
-  const [close, { isLoading }] = useCloseMutation();
+  const [closeSession, { isLoading }] = useCloseSessionMutation();
 
   const handleSignout = async () => {
     try {
-      const resp = await close().unwrap();
+      const resp = await closeSession().unwrap();
       if (resp?.statusCode === 200) {
         dispatch(signoutSuccess(resp));
         navigate("/");

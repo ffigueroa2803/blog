@@ -22,7 +22,7 @@ const LoginForm = () => {
     formState: { errors },
   } = useForm({ resolver: zodResolver(FormLoginSchema) });
 
-  const [login, { isLoading }] = useLoginMutation();
+  const [login, { isLoading, isError, isSuccess }] = useLoginMutation();
 
   const handleCreateUser = async ({ email, password }, e) => {
     e.preventDefault();
@@ -71,8 +71,8 @@ const LoginForm = () => {
           <p className="text-sm text-red-400 mt-1">{errors.password.message}</p>
         )}
       </div>
-      <FormError message={error} setError={setError} />
-      <FormSuccess message={success} setSuccess={setSuccess} />
+      {isError && <FormError message={error} setError={setError} />}
+      {isSuccess && <FormSuccess message={success} setSuccess={setSuccess} />}
       {/* Button */}
       <Button gradientDuoTone="purpleToPink" type="submit">
         {isLoading ? (

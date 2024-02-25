@@ -3,7 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   users: undefined,
   page: 1,
-  limit: 2,
+  limit: 8,
   search: "",
 };
 

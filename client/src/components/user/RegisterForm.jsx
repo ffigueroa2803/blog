@@ -16,7 +16,8 @@ const RegisterForm = () => {
     formState: { errors },
   } = useForm({ resolver: zodResolver(FormRegisterUserSchema) });
 
-  const [createUser, { isLoading }] = useCreateUserMutation();
+  const [createUser, { isLoading, isError, isSuccess }] =
+    useCreateUserMutation();
 
   const handleCreateUser = async ({ name, email, password }) => {
     try {
@@ -75,8 +76,8 @@ const RegisterForm = () => {
           <p className="text-sm text-red-400 mt-1">{errors.password.message}</p>
         )}
       </div>
-      <FormError message={error} setError={setError} />
-      <FormSuccess message={success} setSuccess={setSuccess} />
+      {isError && <FormError message={error} setError={setError} />}
+      {isSuccess && <FormSuccess message={success} setSuccess={setSuccess} />}
       {/* Button */}
       <Button gradientDuoTone="purpleToPink" type="submit">
         {isLoading ? (

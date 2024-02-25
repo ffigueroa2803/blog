@@ -23,7 +23,7 @@ export const authApi = apiSlice.injectEndpoints({
       ],
     }),
 
-    close: builder.mutation({
+    closeSession: builder.mutation({
       query: () => ({
         url: "/api/auth/signout",
         method: "POST",
@@ -65,6 +65,6 @@ export const authApi = apiSlice.injectEndpoints({
 export const {
   useLoginMutation,
   useGoogleMutation,
-  useCloseMutation,
+  useCloseSessionMutation,
   useUploadProgressMutation,
 } = authApi;

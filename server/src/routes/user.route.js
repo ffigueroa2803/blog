@@ -1,14 +1,22 @@
 import { Router } from "express";
-import { getusers, update } from "../controllers/user.controller.js";
+import {
+  deleteUser,
+  getUsers,
+  updateUser,
+} from "../controllers/user.controller.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { validateSchema } from "./../middlewares/validator.middleware.js";
 import { createUserSchema } from "../schemas/user.schema.js";
 
 const router = Router();
 
-router.use(verifyJWT);
-
-router.get("/getusers", getusers);
-router.put("/update/:userId", validateSchema(createUserSchema), update);
+router.get("/getusers", verifyJWT, getUsers);
+router.put(
+  "/update/:userId",
+  verifyJWT,
+  validateSchema(createUserSchema),
+  updateUser
+);
+router.delete("/delete/:userId", verifyJWT, deleteUser);
 
 export default router;

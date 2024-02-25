@@ -1,5 +1,7 @@
 import AttachmentFileButton from "./AttachmentFileButton";
 import CallToAction from "./CallToAction";
+import Comment from "./comment/Comment";
+import CommentSection from "./comment/CommentSection";
 import Header from "./Header";
 import FormError from "./FormError";
 import FormSuccess from "./FormSuccess";
@@ -14,6 +16,8 @@ import ThemeProvider from "./ThemeProvider";
 export {
   AttachmentFileButton,
   CallToAction,
+  Comment,
+  CommentSection,
   Header,
   FormError,
   FormSuccess,

@@ -3,9 +3,9 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AiOutlineSearch } from "react-icons/ai";
 import { FaMoon, FaSun } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
-import { useCloseMutation } from "../redux/services/auth/authApi";
 import { signoutSuccess } from "../redux/features/auth/authSlice";
 import { toggleTheme } from "../redux/features/theme/themeSlice";
+import { useCloseSessionMutation } from "../redux/services/auth/authApi";
 
 const Header = () => {
   const dispatch = useDispatch();
@@ -16,13 +16,13 @@ const Header = () => {
   const { currentUser } = useSelector((state) => state.auth);
   const { theme } = useSelector((state) => state.theme);
 
-  const [close, { isLoading }] = useCloseMutation();
+  const [closeSession, { isLoading }] = useCloseSessionMutation();
 
   const handleSignout = async () => {
     try {
-      const resp = await close().unwrap();
+      const resp = await closeSession().unwrap();
       if (resp?.statusCode === 200) {
-        dispatch(signoutSuccess(resp));
+        dispatch(signoutSuccess());
         navigate("/");
       }
     } catch (error) {
@@ -42,7 +42,7 @@ const Header = () => {
         </span>
         Blog
       </Link>
-      {/* Search */}
+      {/* Form Search */}
       <form>
         <TextInput
           type="text"
@@ -51,6 +51,7 @@ const Header = () => {
           className="hidden lg:inline"
         />
       </form>
+      {/* Search */}
       <Button className="w-12 h-10 lg:hidden" color="gray" pill>
         <AiOutlineSearch />
       </Button>
