@@ -5,6 +5,8 @@ import { useGetUsersQuery } from "../redux/services/user/userApi";
 import avatar from "../assets/avatar-default.png";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
 import { FaCheck, FaTimes } from "react-icons/fa";
+import { Pagination } from "../components";
+import { userChangeCurrentPage } from "../redux/features/user/userSlice";
 
 const Users = () => {
   const { currentUser } = useSelector((state) => state.auth);
@@ -74,14 +76,10 @@ const Users = () => {
               </Table.Body>
             ))}
           </Table>
-          {showMore && (
-            <button
-              onClick={handleShowMore}
-              className="w-full text-teal-500 self-center text-sm py-7"
-            >
-              Show more
-            </button>
-          )}
+          <Pagination
+            {...getUsers?.meta}
+            changeCurrentPage={userChangeCurrentPage}
+          />
         </>
       ) : (
         <p>¡Aún no tienes usuarios!</p>

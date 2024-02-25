@@ -9,6 +9,7 @@ import Footer from "./Footer";
 import LoginForm from "./auth/LoginForm";
 import OAuth from "./OAuth";
 import PostCard from "./post/PostCard";
+import Pagination from "./Pagination";
 import RegisterForm from "./user/RegisterForm";
 import Sidebar from "./Sidebar";
 import ThemeProvider from "./ThemeProvider";
@@ -25,6 +26,7 @@ export {
   LoginForm,
   OAuth,
   PostCard,
+  Pagination,
   RegisterForm,
   Sidebar,
   ThemeProvider,
