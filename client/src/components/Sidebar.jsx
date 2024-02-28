@@ -45,7 +45,7 @@ const Sidebar = () => {
   }, [location.search]);
 
   return (
-    <SidebarFlow className="w-full md:w-56">
+    <SidebarFlow className="w-full md:w-56" disabled>
       <SidebarFlow.Items>
         <SidebarFlow.ItemGroup className="flex flex-col gap-1">
           {currentUser && currentUser?.user?.role === "ADMIN" && (

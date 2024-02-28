@@ -36,7 +36,7 @@ const Dashboard = () => {
           <div className="flex justify-between">
             <div className="">
               <h3 className="text-gray-500 text-md uppercase">
-                Total de usuariOs
+                Total de usuarios
               </h3>
               <p className="text-2xl">{getUsers?.meta?.totalItems}</p>
             </div>

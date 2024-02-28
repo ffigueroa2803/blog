@@ -1,5 +1,6 @@
+import { Button } from "flowbite-react";
 import React, { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 
 const Pagination = ({
   totalPages,
@@ -32,14 +33,15 @@ const Pagination = ({
   };
 
   return (
-    <div className="bg-white rounded-md mt-3 dark:bg-gray-800">
-      <div className="container flex flex-col items-center px-6 py-5 mx-auto space-y-6 sm:flex-row sm:justify-between sm:space-y-0 ">
+    <div className="bg-white rounded-md mt-3 dark:bg-gray-800 md:w-auto">
+      <div className="container flex flex-col items-center px-6 py-5 mx-auto space-y-6 sm:flex-row sm:justify-between sm:space-y-0">
         <div className="flex flex-row -mx-2">
           {/* Previous */}
-          <button
+          <Button
+            gradientDuoTone="purpleToPink"
             disabled={Number(currentPage) === 1}
             onClick={() => changeCurrentPageNumberDec(currentPage)}
-            className={`px-4 py-2 mx-1 transition-colors duration-300 transform rounded-md text-white disabled:bg-gray-200`}
+            className={`mx-2 text-white disabled:bg-gray-200`}
           >
             <div className="flex items-center -mx-1">
               <svg
@@ -58,15 +60,16 @@ const Pagination = ({
               </svg>
               <span className="mx-1">Anterior</span>
             </div>
-          </button>
+          </Button>
           {/* Next */}
-          <button
+          <Button
+            gradientDuoTone="purpleToPink"
             disabled={
               Number(totalPages === 0 ? 1 : totalPages) ===
                 Number(currentPage) || loading
             }
             onClick={() => changeCurrentPageNumberInc(currentPage)}
-            className="px-4 py-2 mx-1 transition-colors duration-300 transform rounded-md text-white disabled:bg-gray-200"
+            className="text-white disabled:bg-gray-200"
           >
             <div className="flex items-center -mx-1">
               <span className="mx-1">Siguiente</span>
@@ -102,7 +105,7 @@ const Pagination = ({
                 </svg>
               )}
             </div>
-          </button>
+          </Button>
         </div>
         <div className="text-gray-500">
           <span className="font-medium">
