@@ -35,11 +35,11 @@ const App = () => {
         <Route element={<OnlyAdminPrivateRouter />}>
           <Route path="/create-post" element={<RegisterPost />} />
           <Route path="/update-post/:postId" element={<UpdatePost />} />
+          <Route path="/post/:postSlug" element={<GetPost />} />
         </Route>
         <Route path="/projects" element={<Projects />} />
-        <Route path="/post/:postSlug" element={<GetPost />} />
       </Routes>
-      <Footer />
+      {/* <Footer /> */}
     </BrowserRouter>
   );
 };

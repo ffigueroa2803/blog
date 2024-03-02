@@ -6,24 +6,28 @@ import {
   CommentSection,
   LoadingGlobal,
 } from "./../../components";
-import { useLazyGetPostsQuery } from "../../redux/services/post/postApi";
+import {
+  useGetPostsQuery,
+  useLazyGetPostsQuery,
+} from "../../redux/services/post/postApi";
 
 const GetPost = () => {
   const { postSlug } = useParams();
 
   const [recentPosts, setRecentPosts] = useState(null);
 
-  const [getPosts, { data: post, isLoading, error }] = useLazyGetPostsQuery();
+  const {
+    data: post,
+    isLoading,
+    error,
+    isFetching,
+  } = useGetPostsQuery({ slug: postSlug });
 
-  useEffect(() => {
-    if (postSlug) getPosts({ slug: postSlug });
-  }, [postSlug]);
-
-  if (isLoading) <LoadingGlobal />;
-
-  return (
+  return isLoading ? (
+    <LoadingGlobal />
+  ) : (
     <main className="p-3 flex flex-col max-w-6xl mx-auto min-h-screen">
-      <h1 className="text-3xl mt-10 p-3 text-center font-serif max-w-2xl mx-auto lg:text-4xl">
+      <h1 className="text-3xl mt-10 p-3 text-justify font-serif max-w-2xl mx-auto lg:text-4xl">
         {post?.data[0]?.title}
       </h1>
       <Link
@@ -49,7 +53,7 @@ const GetPost = () => {
         </span>
       </div>
       <div
-        className="p-3 max-w-2xl mx-auto w-full post-content"
+        className="p-3 max-w-2xl mx-auto w-full post-content text-justify"
         dangerouslySetInnerHTML={{ __html: post?.data[0]?.content }}
       ></div>
       <div className="max-w-4xl mx-auto w-full">

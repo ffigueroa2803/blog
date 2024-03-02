@@ -58,9 +58,9 @@ const Posts = () => {
                           />
                         </Link>
                       </Table.Cell>
-                      <Table.Cell>
+                      <Table.Cell width={480}>
                         <Link
-                          className="font-medium text-gray-900 dark:text-white"
+                          className="font-medium text-gray-900 text-justify dark:text-white"
                           to={`/post/${post.slug}`}
                         >
                           {post.title}
