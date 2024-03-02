@@ -19,13 +19,10 @@ const Users = () => {
     isFetching,
   } = useGetUsersQuery({ sort: "latest", page, limit, search });
 
-  const [users, setUsers] = useState([]);
-  const [showMore, setShowMore] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [userIdToDelete, setUserIdToDelete] = useState("");
 
   const handleDeleteUser = () => {};
-  const handleShowMore = () => {};
 
   return (
     <>
