@@ -33,11 +33,8 @@ export const authApi = apiSlice.injectEndpoints({
     uploadProgress: builder.mutation({
       queryFn: async ({ url, data }, api) => {
         try {
-          console.log({ url, data });
           const result = await axios.post(url, data, {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
+            headers: { "Content-Type": "multipart/form-data" },
             onUploadProgress: (upload) => {
               //Establezca el valor de progreso para mostrar la barra de progreso
               let uploadloadProgress = Math.round(

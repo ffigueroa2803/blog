@@ -3,13 +3,21 @@ import {
   About,
   Container,
   Home,
+  Posts,
   Projects,
   Search,
   SignIn,
   SignUp,
 } from "./pages";
-import { Footer, Header } from "./components";
+import {
+  Footer,
+  GetPost,
+  Header,
+  RegisterPost,
+  UpdatePost,
+} from "./components";
 import PrivateRouter from "./routers/PrivateRouter";
+import OnlyAdminPrivateRouter from "./routers/OnlyAdminPrivateRouter";
 
 const App = () => {
   return (
@@ -24,10 +32,12 @@ const App = () => {
         <Route element={<PrivateRouter />}>
           <Route path="/container" element={<Container />} />
         </Route>
-        {/* <Route element={<OnlyAdminPrivateRoute />}>
-          <Route path="/create-post" element={<CreatePost />} />
-        </Route> */}
+        <Route element={<OnlyAdminPrivateRouter />}>
+          <Route path="/create-post" element={<RegisterPost />} />
+          <Route path="/update-post/:postId" element={<UpdatePost />} />
+        </Route>
         <Route path="/projects" element={<Projects />} />
+        <Route path="/post/:postSlug" element={<GetPost />} />
       </Routes>
       <Footer />
     </BrowserRouter>

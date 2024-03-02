@@ -77,6 +77,11 @@ const Header = () => {
                 {currentUser?.user?.email}
               </span>
             </Dropdown.Header>
+            {currentUser?.user?.role === "ADMIN" && (
+              <Link to={"/container?tab=dashboard"}>
+                <Dropdown.Item>Panel</Dropdown.Item>
+              </Link>
+            )}
             <Link to={"/container?tab=profile"}>
               <Dropdown.Item>Perfil</Dropdown.Item>
             </Link>

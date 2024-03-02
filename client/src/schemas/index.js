@@ -23,3 +23,13 @@ export const FormRegisterUserSchema = z.object({
     .email({ message: "Dirección de correo electrónico no válida" }),
   password: z.string().min(8, { message: "Mínimo 8 digitos" }),
 });
+
+export const FormRegisterPostSchema = z.object({
+  title: z.string().min(1, {
+    message: "Título es requerido",
+  }),
+  category: z.string().min(1, { message: "Categoría es requerido" }),
+  // image: z.string().min(1, {
+  //   message: "Imagen es requerido",
+  // }),
+});

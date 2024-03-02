@@ -3,8 +3,8 @@ import { apiSlice } from "../apiSlice";
 export const userApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getUsers: builder.query({
-      query: ({ page, limit, search }) =>
-        `/api/user/getusers?page=${page}&limit=${limit}&querySearch=${search}`,
+      query: ({ sort, page, limit, search }) =>
+        `/api/user/getusers?sort=${sort}&page=${page}&limit=${limit}&querySearch=${search}`,
       providesTags: ["User"],
     }),
 

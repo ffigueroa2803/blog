@@ -4,6 +4,7 @@ import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import { apiSlice } from "./services/apiSlice";
 import userSliceReducer from "./features/user/userSlice";
+import postSliceReducer from "./features/post/postSlice";
 import authSliceReducer from "./features/auth/authSlice";
 import themeSliceReducer from "./features/theme/themeSlice";
 
@@ -11,6 +12,7 @@ const rootReducer = combineReducers({
   // Agrega el reductor generado como un segmento específico de nivel superior
   [apiSlice.reducerPath]: apiSlice.reducer,
   user: userSliceReducer,
+  post: postSliceReducer,
   auth: authSliceReducer,
   theme: themeSliceReducer,
 });

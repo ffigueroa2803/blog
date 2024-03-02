@@ -14,7 +14,9 @@ const RegisterForm = () => {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm({ resolver: zodResolver(FormRegisterUserSchema) });
+  } = useForm({
+    resolver: zodResolver(FormRegisterUserSchema),
+  });
 
   const [createUser, { isLoading, isError, isSuccess }] =
     useCreateUserMutation();

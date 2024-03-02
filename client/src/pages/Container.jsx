@@ -17,8 +17,8 @@ const Container = () => {
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
+      {/* Sidebar */}
       <div className="md:w-56">
-        {/* Sidebar */}
         <Sidebar />
       </div>
       {/* profile... */}

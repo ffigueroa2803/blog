@@ -9,14 +9,15 @@ import { Pagination } from "../components";
 import { userChangeCurrentPage } from "../redux/features/user/userSlice";
 
 const Users = () => {
-  const { currentUser } = useSelector((state) => state.auth);
+  const { currentUser } = useSelector((state) => state?.auth);
   const { page, limit, search } = useSelector((state) => state?.user);
 
   const {
     data: getUsers,
     isLoading,
     error,
-  } = useGetUsersQuery({ page, limit, search });
+    isFetching,
+  } = useGetUsersQuery({ sort: "latest", page, limit, search });
 
   const [users, setUsers] = useState([]);
   const [showMore, setShowMore] = useState(true);
@@ -89,7 +90,7 @@ const Users = () => {
           changeCurrentPage={userChangeCurrentPage}
         />
       </div>
-
+      {/* Modal Eliminar */}
       <Modal
         show={showModal}
         onClose={() => setShowModal(false)}

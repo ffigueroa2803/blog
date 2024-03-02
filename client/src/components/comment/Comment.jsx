@@ -21,7 +21,7 @@ const Comment = ({ comment, onLike, onEdit, onDelete }) => {
       <div className="flex-1">
         <div className="flex items-center mb-1">
           <span className="font-bold mr-1 text-xs truncate">
-            {user ? `@${user.username}` : "anonymous user"}
+            {user ? `@${user.username}` : "Usuario anónimo"}
           </span>
           <span className="text-gray-500 text-xs">
             {moment(comment.createdAt).fromNow()}
@@ -41,7 +41,7 @@ const Comment = ({ comment, onLike, onEdit, onDelete }) => {
                 gradientDuoTone="purpleToBlue"
                 onClick={handleSave}
               >
-                Save
+                Guardar
               </Button>
               <Button
                 type="button"
@@ -50,7 +50,7 @@ const Comment = ({ comment, onLike, onEdit, onDelete }) => {
                 outline
                 onClick={() => setIsEditing(false)}
               >
-                Cancel
+                Cancelar
               </Button>
             </div>
           </>
@@ -83,14 +83,14 @@ const Comment = ({ comment, onLike, onEdit, onDelete }) => {
                       onClick={handleEdit}
                       className="text-gray-400 hover:text-blue-500"
                     >
-                      Edit
+                      Editar
                     </button>
                     <button
                       type="button"
                       onClick={() => onDelete(comment._id)}
                       className="text-gray-400 hover:text-red-500"
                     >
-                      Delete
+                      Elimanr
                     </button>
                   </>
                 )}

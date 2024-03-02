@@ -1,55 +1,132 @@
-import { useState } from "react";
-import { Button } from "flowbite-react";
+import { Modal, Table, Button } from "flowbite-react";
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { CallToAction, CommentSection } from "./../components";
+import { HiOutlineExclamationCircle } from "react-icons/hi";
+import { useGetPostsQuery } from "../redux/services/post/postApi";
+import { Pagination } from "../components";
+import { postChangeCurrentPage } from "../redux/features/post/postSlice";
 
 const Posts = () => {
-  const [post, setPost] = useState(null);
-  const [recentPosts, setRecentPosts] = useState(null);
+  const { currentUser } = useSelector((state) => state?.auth);
+  const { page, limit, search } = useSelector((state) => state?.post);
+
+  const [showModal, setShowModal] = useState(false);
+  const [postIdToDelete, setPostIdToDelete] = useState("");
+
+  const {
+    data: userPosts,
+    isLoading,
+    error,
+    isFetching,
+  } = useGetPostsQuery({ page, limit, userId: currentUser?.user?.id });
+
+  const handleShowMore = async () => {};
+
+  const handleDeletePost = async () => {};
 
   return (
-    <main className="p-3 flex flex-col max-w-6xl mx-auto min-h-screen">
-      <h1 className="text-3xl mt-10 p-3 text-center font-serif max-w-2xl mx-auto lg:text-4xl">
-        {post && post?.title}
-      </h1>
-      <Link
-        to={`/search?category=${post && post?.category}`}
-        className="self-center mt-5"
-      >
-        <Button color="gray" pill size="xs">
-          {post && post?.category}
-        </Button>
-      </Link>
-      <img
-        src={post && post?.image}
-        alt={post && post?.title}
-        className="mt-10 p-3 max-h-[600px] w-full object-cover"
-      />
-      <div className="flex justify-between p-3 border-b border-slate-500 mx-auto w-full max-w-2xl text-xs">
-        <span>{post && new Date(post.createdAt).toLocaleDateString()}</span>
-        <span className="italic">
-          {post && (post?.content?.length / 1000).toFixed(0)} mins read
-        </span>
-      </div>
-      <div
-        className="p-3 max-w-2xl mx-auto w-full post-content"
-        dangerouslySetInnerHTML={{ __html: post && post?.content }}
-      ></div>
-      <div className="max-w-4xl mx-auto w-full">
-        <CallToAction />
-      </div>
-      <CommentSection postId={post?._id} />
-
-      <div className="flex flex-col justify-center items-center mb-5">
-        <h1 className="text-xl mt-5">Recent articles</h1>
-        <div className="flex flex-wrap gap-5 mt-5 justify-center">
-          {recentPosts &&
-            recentPosts?.map((post) => (
-              <PostCard key={post?._id} post={post} />
-            ))}
+    <>
+      <div className="table-auto md:mx-auto m-2">
+        <div className="mt-4 mb-4  overflow-x-auto">
+          {currentUser?.user?.role === "ADMIN" &&
+          userPosts?.data?.length > 0 ? (
+            <>
+              <Table hoverable className="shadow-md">
+                <Table.Head>
+                  <Table.HeadCell>Fecha</Table.HeadCell>
+                  <Table.HeadCell>Imagen</Table.HeadCell>
+                  <Table.HeadCell>Título</Table.HeadCell>
+                  <Table.HeadCell>Categoría</Table.HeadCell>
+                  <Table.HeadCell>Eliminar</Table.HeadCell>
+                  <Table.HeadCell>
+                    <span>Editar</span>
+                  </Table.HeadCell>
+                </Table.Head>
+                {userPosts?.data?.map((post) => (
+                  <Table.Body className="divide-y" key={post.id}>
+                    <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
+                      <Table.Cell>
+                        {new Date(post.updatedAt).toLocaleDateString()}
+                      </Table.Cell>
+                      <Table.Cell>
+                        <Link to={`/post/${post.slug}`}>
+                          <img
+                            src={post.image}
+                            alt={post.title}
+                            className="w-20 h-10 object-contain bg-gray-500"
+                          />
+                        </Link>
+                      </Table.Cell>
+                      <Table.Cell>
+                        <Link
+                          className="font-medium text-gray-900 dark:text-white"
+                          to={`/post/${post.slug}`}
+                        >
+                          {post.title}
+                        </Link>
+                      </Table.Cell>
+                      <Table.Cell>{post.category}</Table.Cell>
+                      <Table.Cell>
+                        <span
+                          onClick={() => {
+                            setShowModal(true);
+                            setPostIdToDelete(post.id);
+                          }}
+                          className="font-medium text-red-500 hover:underline cursor-pointer"
+                        >
+                          Eliminar
+                        </span>
+                      </Table.Cell>
+                      <Table.Cell>
+                        <Link
+                          className="text-teal-500 hover:underline"
+                          to={`/update-post/${post.id}`}
+                        >
+                          <span>Editar</span>
+                        </Link>
+                      </Table.Cell>
+                    </Table.Row>
+                  </Table.Body>
+                ))}
+              </Table>
+            </>
+          ) : (
+            <p>¡Aún no tienes publicaciones!</p>
+          )}
         </div>
+        {/* Pagination */}
+        <Pagination
+          {...userPosts?.meta}
+          changeCurrentPage={postChangeCurrentPage}
+        />
       </div>
-    </main>
+      {/* Modal Eliminar */}
+      <Modal
+        show={showModal}
+        onClose={() => setShowModal(false)}
+        popup
+        size="md"
+      >
+        <Modal.Header />
+        <Modal.Body>
+          <div className="text-center">
+            <HiOutlineExclamationCircle className="h-14 w-14 text-gray-400 dark:text-gray-200 mb-4 mx-auto" />
+            <h3 className="mb-5 text-lg text-gray-500 dark:text-gray-400">
+              ¿Estás seguro de que deseas eliminar esta publicación?
+            </h3>
+            <div className="flex justify-center gap-4">
+              <Button color="failure" onClick={handleDeletePost}>
+                Si estoy seguro
+              </Button>
+              <Button color="gray" onClick={() => setShowModal(false)}>
+                No, cancelar
+              </Button>
+            </div>
+          </div>
+        </Modal.Body>
+      </Modal>
+    </>
   );
 };
 

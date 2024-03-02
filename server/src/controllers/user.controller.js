@@ -28,6 +28,7 @@ export const updateUser = async (req, res, next) => {
         success: true,
         statusCode: 200,
         message: "Modificado correctamente.",
+        user: userUpate,
       });
     }
   } catch (error) {
@@ -37,15 +38,31 @@ export const updateUser = async (req, res, next) => {
 
 export const getUsers = async (req, res, next) => {
   try {
+    const sortParam = req.query.sort;
     const pageParam = Number(req.query.page) || 0;
     const limitParam = Number(req.query.limit) || 1;
     const querySearchParam = req.query.querySearch;
+
+    let sortDef;
+
+    switch (sortParam) {
+      case "latest":
+        sortDef = { createdAt: "desc" }; //Último
+        break;
+      case "oldest":
+        sortDef = { createdAt: "asc" }; //Más antiguo
+        break;
+      default:
+        sortDef = { createdAt: "desc" }; //Último
+        break;
+    }
 
     const skip = (pageParam - 1) * limitParam; // Calcula el offset
 
     const [records, users] = await Promise.all([
       prisma.user.count(),
       prisma.user.findMany({
+        orderBy: sortDef,
         where: { name: { contains: querySearchParam } },
         take: limitParam || undefined,
         skip: Number(skip) || undefined,
@@ -114,6 +131,31 @@ export const deleteUser = async (req, res, next) => {
         message: "Eliminado correctamente.",
       });
     }
+  } catch (error) {
+    return next(error);
+  }
+};
+
+export const getUser = async (req, res, next) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: {
+        id: req.params.userId,
+      },
+    });
+
+    if (!user) {
+      return next(errorHandler(404, "Usuario no encontrado"));
+    }
+
+    delete user.password;
+
+    return res.status(200).json({
+      success: true,
+      statusCode: 200,
+      message: "Procesado correctamente",
+      user,
+    });
   } catch (error) {
     return next(error);
   }

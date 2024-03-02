@@ -19,9 +19,8 @@ const Dashboard = () => {
     data: getUsers,
     isLoading,
     error,
-  } = useGetUsersQuery({ page, limit: 5, search });
+  } = useGetUsersQuery({ sort: "latest", page, limit: 5, search });
 
-  const [users, setUsers] = useState([]);
   const [comments, setComments] = useState([]);
   const [posts, setPosts] = useState([]);
   const [totalPosts, setTotalPosts] = useState(0);

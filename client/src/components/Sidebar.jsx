@@ -48,10 +48,10 @@ const Sidebar = () => {
     <SidebarFlow className="w-full md:w-56" disabled>
       <SidebarFlow.Items>
         <SidebarFlow.ItemGroup className="flex flex-col gap-1">
-          {currentUser && currentUser?.user?.role === "ADMIN" && (
+          {currentUser?.user?.role === "ADMIN" && (
             <Link to="/container?tab=dashboard">
               <SidebarFlow.Item
-                active={tab === "dash" || !tab}
+                active={tab === "dashboard" || !tab}
                 icon={HiChartPie}
                 as="div"
               >

@@ -51,8 +51,10 @@ const Profile = () => {
       isSuccess: isSuccessUpdate,
     },
   ] = useUpdateUserMutation();
+
   const [deleteUser, { isLoading: isLoadingDelete, isError: isErrorDelete }] =
     useDeleteUserMutation();
+
   const [closeSession, { isLoading: isLoadingCloseSession }] =
     useCloseSessionMutation();
 
